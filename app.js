@@ -1,10 +1,10 @@
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const KEY = 'scholarsafe-v1';
 
 const HELP = [
   { q: 'What does this app do?', t: 'app', a: 'It points you to official scholarship doors, checks offers for common scam signs, and keeps a history on this device. It does not apply for you, does not guarantee money, and does not upload your list.' },
   { q: 'Where is my data stored?', t: 'app', a: 'Only on this device, in this browser. There is no account and no cloud copy. The publisher cannot see your history.' },
-  { q: 'How do parents see what I found?', t: 'family', a: 'Use Family → Export. Send that file to a parent. They install the same app and use Import. Do not send the file to friends. It is your work.' },
+  { q: 'How do parents see what I found?', t: 'family', a: 'On any item in List, tap Email family. That opens a short mail draft with the official link. They do not need this app. You still apply on the official site.' },
   { q: 'Why is backup so important?', t: 'family', a: 'A forgotten PIN, a cleared browser, a new phone, or “wipe site data” erases this copy. A recent export is the only backup. Export after any week you add notes, and again before February 1.' },
   { q: 'Which A&M application do I use?', t: 'tamu', a: 'If you are already enrolled at Texas A&M, use the University Scholarship Application at uwide.tamu.edu. That is the continuing-student door. The freshman Common App / ApplyTexas December 1 path is for students entering in the fall, not for students already on campus.' },
   { q: 'When does the A&M continuing application open?', t: 'tamu', a: 'It opens October 15 and the deadline is February 1 for the next academic year. There is no separate Submit button — it is complete when status turns green. Answer every section. Late applications are not considered.' },
@@ -17,7 +17,7 @@ const HELP = [
   { q: 'Is there a master password?', t: 'app', a: 'No. The optional PIN only locks this copy on this device. Nobody — including the publisher — can look up your PIN. Forgot PIN erases this device copy. Import your last backup to recover.' },
   { q: 'How do I update the app?', t: 'app', a: 'Tap Check for update on Home or More. If a newer version is published, refresh or close and reopen so the new files load. Read What’s new — it explains fixes in everyday language.' },
   { q: 'The app looks old after an update.', t: 'app', a: 'Do a hard refresh (Chromebook: Shift + reload) or close the installed app and open it again. Check that the version in the top corner matches What’s new.' },
-  { q: 'Something is broken. Do I text the publisher?', t: 'app', a: 'No. Use More → Report a problem. Fill every box. Take a screenshot with the phone or Chromebook, then attach it in your mail app. Scholarship policy questions belong in Help or at Aggie One Stop, not in a bug email.' },
+  { q: 'Something is broken. Do I text the publisher?', t: 'app', a: 'No. Use Menu → Report a problem. Fill every box. Take a screenshot, then attach it in your mail app.' },
   { q: 'How often should I look?', t: 'cadence', a: 'From October 15 to February 1, spend a short session each week on the University Scholarship Application and official department pages. The rest of the year, check official sources about once a month, and again when your hours band changes.' },
   { q: 'Who do we ask at A&M?', t: 'tamu', a: 'Scholarships & Financial Aid / Aggie One Stop. This app cannot confirm whether you will receive an award.' }
 ];
@@ -46,7 +46,8 @@ function defaultData() {
     unlocked: true,
     lastExport: '',
     dirtySinceExport: false,
-    reportEmail: ''
+    reportEmail: '',
+    familyEmail: ''
   };
 }
 function save() {
@@ -91,7 +92,7 @@ function show(name) {
   document.querySelectorAll('.nav button').forEach((b) => {
     b.setAttribute('aria-current', b.dataset.view === name ? 'page' : 'false');
   });
-  ['home','sources','check','history','family','help','more'].forEach((v) => {
+  ['home','sources','check','history','menu'].forEach((v) => {
     const el = $('view-' + v);
     if (el) el.classList.toggle('hidden', v !== name);
   });
@@ -144,9 +145,7 @@ function renderAll() {
   renderSources();
   renderCheck();
   renderHistory();
-  renderFamily();
-  renderHelp();
-  renderMore();
+  renderMenu();
 }
 
 function profileLine() {
@@ -161,38 +160,33 @@ function profileLine() {
 
 function renderHome() {
   const el = $('view-home');
-  const p = state.data.profile;
   el.innerHTML = `
     <div class="card">
-      <h2>Next A&amp;M date</h2>
-      <p>University Scholarship Application for <strong>continuing</strong> students.</p>
-      <p><strong>Opens October 15</strong> · <strong>Deadline February 1</strong></p>
-      <p class="small muted">Already enrolled? Do not use the incoming-freshman December 1 path.</p>
+      <h2>Do this first</h2>
+      <p class="hero">A&amp;M continuing-student application.<br><strong>Opens October 15</strong> · due <strong>February 1</strong></p>
+      <p class="small muted">You are already enrolled. Use this door, not the freshman December form.</p>
       <div class="row">
-        <a class="btn" href="https://uwide.tamu.edu/" target="_blank" rel="noopener">Open A&amp;M application</a>
-        <button class="ghost" type="button" id="checkUpd">Check for update</button>
+        <a class="btn" href="https://uwide.tamu.edu/" target="_blank" rel="noopener">Open the A&amp;M form</a>
       </div>
     </div>
     <div class="card">
-      <h3>On this device</h3>
-      <p>${profileLine()}</p>
+      <h3>Then</h3>
+      <p>Find an official page. Check anything that looks off. Apply there yourself. Email family only if you want them to look at one lead.</p>
       <div class="row">
-        <button class="ghost" type="button" id="openSit">Situation</button>
-        <button class="ghost" type="button" id="goCheck">Check an offer</button>
+        <button class="primary" type="button" id="goFind">Find pages</button>
+        <button class="ghost" type="button" id="goCheck">Check a listing</button>
       </div>
     </div>
     <div class="card ${state.data.seenWelcome ? 'hidden' : ''}" id="welcome">
-      <h3>First time</h3>
-      <p>Official doors, scam checks, history on this phone. Parents only see a file you export. Situation is optional — skip it if you want to start now.</p>
+      <p>Optional: save hours and major so Find hides need-only awards. You can skip this.</p>
       <div class="row">
-        <button class="primary" type="button" id="skipWel">Skip for now</button>
-        <button class="ghost" type="button" id="setWel">Set up Situation</button>
+        <button class="primary" type="button" id="skipWel">Skip</button>
+        <button class="ghost" type="button" id="setWel">Set hours / major</button>
       </div>
     </div>
     <div class="card hidden" id="sitBox">${situationForm()}</div>
   `;
-  $('checkUpd').onclick = checkUpdate;
-  $('openSit').onclick = () => $('sitBox').classList.toggle('hidden');
+  $('goFind').onclick = () => show('sources');
   $('goCheck').onclick = () => show('check');
   if ($('skipWel')) $('skipWel').onclick = () => {
     state.data.seenWelcome = true; save(); $('welcome').classList.add('hidden');
@@ -272,8 +266,8 @@ function renderSources() {
     ['user', 'Added by you']
   ];
   const all = state.sources.concat(state.data.userSources.map((u) => Object.assign({ group: 'user' }, u)));
-  el.innerHTML = `<div class="card"><h2>Sources</h2>
-    <p class="small muted">Official pages first. Last verified dates are on each card. This is not a complete catalog of every scholarship in America.</p></div>` +
+  el.innerHTML = `<div class="card"><h2>Find</h2>
+    <p class="small muted">Official pages first. Open the site and apply there. This is not every scholarship in America.</p></div>` +
     groups.map(([g, label]) => {
       const items = all.filter((s) => s.group === g && sourceVisible(s));
       if (!items.length && g !== 'user') return '';
@@ -341,6 +335,8 @@ function runCheck() {
   state.data.dirtySinceExport = true;
   save();
   $('checkOut').innerHTML = resultHtml(rec);
+  const em = $('emailThis');
+  if (em) em.onclick = () => emailLead(rec);
   maybeBanners();
 }
 
@@ -362,7 +358,8 @@ function resultHtml(rec) {
   const worst = rec.flags.some((f) => f.level === 'stop') ? 'bad' : rec.flags.some((f) => f.level === 'warn') ? 'warn' : 'ok';
   return `<div class="card"><p><span class="tag ${worst}">${worst === 'bad' ? 'Do not proceed' : worst === 'warn' ? 'Warning' : 'No auto flag'}</span></p>
     <ul>${rec.flags.map((f) => `<li>${esc(f.why)}</li>`).join('')}</ul>
-    <p class="small muted">Saved to History.</p></div>`;
+    <p class="small muted">Saved to List.</p>
+    <button class="ghost" type="button" id="emailThis">Email family this one</button></div>`;
 }
 
 function renderHistory() {
@@ -375,7 +372,7 @@ function renderHistory() {
   if (q) rows = rows.filter((r) => (r.text + r.url + r.note).toLowerCase().includes(q));
   $('view-history').innerHTML = `
     <div class="card">
-      <h2>History</h2>
+      <h2>List</h2>
       <input id="histQ" placeholder="Search history" value="${esc(window._histQ || '')}" />
       <div class="row" style="margin-top:8px">
         <button class="ghost" type="button" data-f="all">All</button>
@@ -392,6 +389,8 @@ function renderHistory() {
     const nt = document.querySelector('[data-nt="'+r.id+'"]');
     if (st) st.onchange = () => { r.status = st.value; state.data.dirtySinceExport = true; save(); };
     if (nt) nt.onchange = () => { r.note = nt.value; state.data.dirtySinceExport = true; save(); };
+    const em = document.querySelector('[data-em="'+r.id+'"]');
+    if (em) em.onclick = () => emailLead(r);
   });
 }
 
@@ -412,23 +411,41 @@ function histCard(r) {
     </select>
     <label>Note</label>
     <input data-nt="${r.id}" value="${esc(r.note)}" />
+    <div class="row" style="margin-top:8px">
+      <button class="ghost" type="button" data-em="${r.id}">Email family this one</button>
+    </div>
   </article>`;
 }
 
+function emailLead(rec) {
+  const to = state.data.familyEmail || '';
+  const flags = (rec.flags || []).map((f) => '- ' + f.why).join('\n');
+  const body = [
+    'Possible scholarship to review',
+    '',
+    rec.text || '(no title)',
+    rec.url ? 'Link: ' + rec.url : 'No link saved — please ask me for the official page.',
+    '',
+    'What the checker said:',
+    flags || '- No automatic flag',
+    '',
+    rec.note ? ('My note: ' + rec.note) : '',
+    '',
+    'I have not applied. I will apply on the official site if this looks real.',
+    '',
+    '(Sent from ScholarSafe v' + APP_VERSION + ')'
+  ].filter(Boolean).join('\n');
+  if (!to) {
+    navigator.clipboard.writeText(body).then(() => alert('No family email saved yet. The text was copied. Open Menu, add an email, or paste this into a message.')).catch(() => alert(body));
+    return;
+  }
+  location.href = 'mailto:' + encodeURIComponent(to) +
+    '?subject=' + encodeURIComponent('Scholarship to review') +
+    '&body=' + encodeURIComponent(body);
+}
+
 function renderFamily() {
-  $('view-family').innerHTML = `
-    <div class="card">
-      <h2>Family file</h2>
-      <p>This file is how parents help without duplicating your search. It is also your only backup.</p>
-      <p class="small muted">Last export: ${esc(state.data.lastExport || 'never')}</p>
-      <div class="row">
-        <button class="primary" type="button" id="doExp">Export file</button>
-        <label class="ghost btn">Import file<input type="file" id="doImp" accept="application/json,.json" hidden /></label>
-      </div>
-      <p class="small">Do not send this file to friends or roommates.</p>
-    </div>`;
-  $('doExp').onclick = doExport;
-  $('doImp').onchange = doImport;
+  renderMenu();
 }
 
 function doExport() {
@@ -491,14 +508,35 @@ function helpList(q) {
   return items.map((h) => `<details class="help-item"><summary>${esc(h.q)}</summary><p>${esc(h.a)}</p></details>`).join('') || '<p>No matching card. Try another word or Report a problem.</p>';
 }
 
-function renderMore() {
-  $('view-more').innerHTML = `
+function renderMenu() {
+  const el = $('view-menu');
+  if (!el) return;
+  el.innerHTML = `
     <div class="card">
-      <h2>More</h2>
+      <h2>Menu</h2>
       <p>Version <strong>${APP_VERSION}</strong></p>
       <div class="row">
         <button class="primary" type="button" id="mUpd">Check for update</button>
       </div>
+    </div>
+    <div class="card">
+      <h3>Family email</h3>
+      <p class="small muted">Used when you tap Email family this one. They do not need the app.</p>
+      <input id="famMail" value="${esc(state.data.familyEmail)}" placeholder="parent@email" />
+      <div class="row" style="margin-top:8px"><button class="primary" type="button" id="saveFam">Save email</button></div>
+    </div>
+    <div class="card">
+      <h3>Backup file</h3>
+      <p class="small muted">Last export: ${esc(state.data.lastExport || 'never')}</p>
+      <div class="row">
+        <button class="ghost" type="button" id="doExp">Export</button>
+        <label class="ghost">Import<input type="file" id="doImp" accept="application/json,.json" hidden /></label>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Help</h3>
+      <input id="helpQ" placeholder="Search help" />
+      <div id="helpList">${helpList('')}</div>
     </div>
     <div class="card">
       <h3>What’s new</h3>
@@ -532,6 +570,14 @@ function renderMore() {
       <button class="primary" type="button" id="rpGo">Open email draft</button>
     </div>`;
   $('mUpd').onclick = checkUpdate;
+  $('saveFam').onclick = () => {
+    state.data.familyEmail = $('famMail').value.trim();
+    save();
+    alert('Family email saved on this device.');
+  };
+  if ($('doExp')) $('doExp').onclick = doExport;
+  if ($('doImp')) $('doImp').onchange = doImport;
+  if ($('helpQ')) $('helpQ').oninput = (e) => { $('helpList').innerHTML = helpList(e.target.value); };
   $('setPin').onclick = () => {
     const p = $('newPin').value;
     if (p.length < 4) return alert('Use at least 4 digits or characters.');

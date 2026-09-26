@@ -2,7 +2,7 @@
   "name": "ScholarSafe",
   "short_name": "ScholarSafe",
   "description": "Find legitimate scholarships and spot scams. Data stays on this device.",
-  "start_url": "./index.html?v=1.0.0",
+  "start_url": "./index.html?v=1.1.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#1a1214",

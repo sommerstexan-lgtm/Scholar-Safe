@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#5c1a1a" />
-  <meta name="description" content="ScholarSafe — legitimate scholarship doors and scam checks. Data stays on this device." />
-  <title>ScholarSafe 1.0.0</title>
+  <meta name="theme-color" content="#f4efe6" />
+  <meta name="description" content="Find a scholarship, check it, email family if you want a review. Data stays on this device." />
+  <title>ScholarSafe 1.1.0</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
@@ -14,13 +14,13 @@
   <div id="lock" class="lock hidden">
     <div class="card" style="width:min(420px,100%)">
       <h1>ScholarSafe</h1>
-      <p class="muted">This copy is locked. Enter the PIN for this device.</p>
+      <p class="muted">Enter the PIN for this device.</p>
       <label for="pinIn">PIN</label>
       <input id="pinIn" type="password" inputmode="numeric" autocomplete="off" />
       <p id="pinErr" class="small" style="color:var(--danger)"></p>
       <div class="row">
         <button class="primary" id="pinGo" type="button">Unlock</button>
-        <button class="danger" id="pinWipe" type="button">Forgot PIN — erase this device copy</button>
+        <button class="danger" id="pinWipe" type="button">Forgot PIN — erase this copy</button>
       </div>
     </div>
   </div>
@@ -29,16 +29,14 @@
     <header class="top">
       <div class="brand">
         <h1>ScholarSafe</h1>
-        <span class="ver" id="verLabel">v1.0.0</span>
+        <span class="ver" id="verLabel">v1.1.0</span>
       </div>
       <nav class="nav" aria-label="Main">
         <button data-view="home" aria-current="page">Home</button>
-        <button data-view="sources">Sources</button>
+        <button data-view="sources">Find</button>
         <button data-view="check">Check</button>
-        <button data-view="history">History</button>
-        <button data-view="family">Family</button>
-        <button data-view="help">Help</button>
-        <button data-view="more">More</button>
+        <button data-view="history">List</button>
+        <button data-view="menu">Menu</button>
       </nav>
     </header>
 
@@ -49,10 +47,8 @@
     <main id="view-sources" class="hidden"></main>
     <main id="view-check" class="hidden"></main>
     <main id="view-history" class="hidden"></main>
-    <main id="view-family" class="hidden"></main>
-    <main id="view-help" class="hidden"></main>
-    <main id="view-more" class="hidden"></main>
-    <p class="footer-note">Data stays on this device. Export is your only backup.</p>
+    <main id="view-menu" class="hidden"></main>
+    <p class="footer-note">Find one. Check it. Apply on the official site. Email family only if you want a review.</p>
   </div>
   <script src="app.js"></script>
 </body>

@@ -1,13 +1,24 @@
 {
   "entries": [
     {
+      "version": "1.1.0",
+      "date": "2026-09-25",
+      "items": [
+        {
+          "wrong": "Too many tabs and a dark screen made the app look heavier than the job.",
+          "changed": "Five simple tabs: Home, Find, Check, List, Menu. Light page. One tap emails a lead to family. She still applies on the official site.",
+          "do": "Hard-refresh. On Menu, save a parent email. Use Find and Check as usual."
+        }
+      ]
+    },
+    {
       "version": "1.0.0",
       "date": "2026-09-25",
       "items": [
         {
           "wrong": "This is the first version. Nothing was broken yet.",
-          "changed": "The app is ready to install. You can check offers, save history, export a backup for parents, and read Help.",
-          "do": "Install it, skip or fill Situation, export a backup after you add anything you care about."
+          "changed": "The app is ready to install.",
+          "do": "Install it and export a backup after you add anything you care about."
         }
       ]
     }
