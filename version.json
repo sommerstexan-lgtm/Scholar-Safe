@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "released": "2026-09-25",
+  "reportEmail": "",
+  "notes": "Set reportEmail to the address that should receive problem reports before sending this app to family."
+}
